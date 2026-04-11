@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json(
-      { error: "The Django API is unavailable. Start Django and try again." },
+      { error: "Base de donnee indisponible." },
       { status: 502 },
     );
   }
