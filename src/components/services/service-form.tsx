@@ -33,7 +33,8 @@ export function ServiceForm({ onChange, onReset, onSubmit, value, editing, canEd
       </Grid>
       <Grid size={{ xs: 12, md: 6 }}>
         <TextField
-          label="Icon"
+          label="Service image link"
+          placeholder="https://example.com/service-image.jpg"
           value={value.icon}
           onChange={(event) => onChange({ ...value, icon: event.target.value })}
           fullWidth

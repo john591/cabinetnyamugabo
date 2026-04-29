@@ -409,6 +409,7 @@ export function AdminDashboard({
             title: serviceForm.title,
             short_description: serviceForm.short_description,
             description: serviceForm.description,
+            icon: serviceForm.icon,
             is_featured: serviceForm.is_featured,
             order: Number(serviceForm.order || 0),
           }),

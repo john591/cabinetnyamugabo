@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Card, CardContent, FormControl, Grid, InputLabel, MenuItem, Select, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
+import { Button, Card, CardContent, FormControl, Grid, InputLabel, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
 import type { AppointmentRequest, Service } from "@/types/api";
 
 type AppointmentFormValue = {
@@ -25,6 +25,25 @@ type AppointmentPanelProps = {
   onStatusChange: (appointmentId: number, status: AppointmentRequest["status"]) => void;
   services: Service[];
   value: AppointmentFormValue;
+};
+
+const statusStyles: Record<AppointmentRequest["status"], { backgroundColor: string; color: string }> = {
+  pending: {
+    backgroundColor: "#b42318",
+    color: "#ffffff",
+  },
+  confirmed: {
+    backgroundColor: "#f59e0b",
+    color: "#111827",
+  },
+  completed: {
+    backgroundColor: "#15803d",
+    color: "#ffffff",
+  },
+  cancelled: {
+    backgroundColor: "#6b7280",
+    color: "#ffffff",
+  },
 };
 
 export function AppointmentPanel({
@@ -156,49 +175,68 @@ export function AppointmentPanel({
       <Grid size={{ xs: 12, lg: 7 }}>
         <Card sx={{ borderRadius: 0 }}>
           <CardContent sx={{ p: 0 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Nom</TableCell>
-                  <TableCell>Service</TableCell>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Heure</TableCell>
-                  <TableCell>Statut</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {paginatedAppointments.map((appointment) => (
-                  <TableRow key={appointment.id}>
-                    <TableCell sx={{ fontWeight: 600 }}>{appointment.name}</TableCell>
-                    <TableCell>{appointment.service?.title ?? "General request"}</TableCell>
-                    <TableCell>{appointment.preferred_date}</TableCell>
-                    <TableCell>{appointment.preferred_time ?? "Not set"}</TableCell>
-                    <TableCell sx={{ minWidth: 160 }}>
-                      {canEdit ? (
-                        <FormControl fullWidth size="small">
-                          <Select
-                            value={appointment.status}
-                            onChange={(event) =>
-                              onStatusChange(
-                                appointment.id,
-                                event.target.value as AppointmentRequest["status"],
-                              )
-                            }
-                          >
-                            <MenuItem value="pending">Pending</MenuItem>
-                            <MenuItem value="confirmed">Confirmed</MenuItem>
-                            <MenuItem value="completed">Completed</MenuItem>
-                            <MenuItem value="cancelled">Cancelled</MenuItem>
-                          </Select>
-                        </FormControl>
-                      ) : (
-                        appointment.status
-                      )}
-                    </TableCell>
+            <TableContainer>
+              <Table sx={{ minWidth: 940 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Nom</TableCell>
+                    <TableCell>Email</TableCell>
+                    <TableCell>Numéro</TableCell>
+                    <TableCell>Service</TableCell>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Heure</TableCell>
+                    <TableCell>Statut</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHead>
+                <TableBody>
+                  {paginatedAppointments.map((appointment) => (
+                    <TableRow key={appointment.id}>
+                      <TableCell sx={{ fontWeight: 600 }}>{appointment.name}</TableCell>
+                      <TableCell>{appointment.email}</TableCell>
+                      <TableCell>{appointment.phone || "Non renseigné"}</TableCell>
+                      <TableCell>{appointment.service?.title ?? "General request"}</TableCell>
+                      <TableCell>{appointment.preferred_date}</TableCell>
+                      <TableCell>{appointment.preferred_time ?? "Not set"}</TableCell>
+                      <TableCell sx={{ minWidth: 160 }}>
+                        {canEdit ? (
+                          <FormControl fullWidth size="small">
+                            <Select
+                              value={appointment.status}
+                              onChange={(event) =>
+                                onStatusChange(
+                                  appointment.id,
+                                  event.target.value as AppointmentRequest["status"],
+                                )
+                              }
+                              sx={{
+                                ...statusStyles[appointment.status],
+                                fontWeight: 700,
+                                ".MuiOutlinedInput-notchedOutline": {
+                                  borderColor: statusStyles[appointment.status].backgroundColor,
+                                },
+                                "&:hover .MuiOutlinedInput-notchedOutline": {
+                                  borderColor: statusStyles[appointment.status].backgroundColor,
+                                },
+                                ".MuiSelect-icon": {
+                                  color: statusStyles[appointment.status].color,
+                                },
+                              }}
+                            >
+                              <MenuItem value="pending">Pending</MenuItem>
+                              <MenuItem value="confirmed">Confirmed</MenuItem>
+                              <MenuItem value="completed">Completed</MenuItem>
+                              <MenuItem value="cancelled">Cancelled</MenuItem>
+                            </Select>
+                          </FormControl>
+                        ) : (
+                          appointment.status
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
             <TablePagination
               component="div"
               count={appointments.length}
