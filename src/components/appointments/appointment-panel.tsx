@@ -8,6 +8,9 @@ type AppointmentFormValue = {
   name: string;
   email: string;
   phone: string;
+  address: string;
+  country: string;
+  office: AppointmentRequest["office"];
   service_id: string;
   preferred_date: string;
   preferred_time: string;
@@ -54,6 +57,52 @@ export function AppointmentPanel({
               </Grid>
               <Grid size={{ xs: 12 }}>
                 <TextField label="Téléphone" value={value.phone} onChange={(event) => onChange({ ...value, phone: event.target.value })} fullWidth />
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                <TextField label="Adresse" value={value.address} onChange={(event) => onChange({ ...value, address: event.target.value })} fullWidth />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="appointment-country-label">Pays</InputLabel>
+                  <Select
+                    labelId="appointment-country-label"
+                    label="Pays"
+                    value={value.country}
+                    onChange={(event) => onChange({ ...value, country: event.target.value })}
+                  >
+                    <MenuItem value="CD">RDC</MenuItem>
+                    <MenuItem value="RW">Rwanda</MenuItem>
+                    <MenuItem value="BI">Burundi</MenuItem>
+                    <MenuItem value="UG">Uganda</MenuItem>
+                    <MenuItem value="KE">Kenya</MenuItem>
+                    <MenuItem value="TZ">Tanzania</MenuItem>
+                    <MenuItem value="CG">Congo</MenuItem>
+                    <MenuItem value="ZA">Afrique du Sud</MenuItem>
+                    <MenuItem value="BE">Belgique</MenuItem>
+                    <MenuItem value="CN">Chine</MenuItem>
+                    <MenuItem value="FR">France</MenuItem>
+                    <MenuItem value="CA">Canada</MenuItem>
+                    <MenuItem value="US">Etats-Unis</MenuItem>
+                    <MenuItem value="GB">Royaume-Uni</MenuItem>
+                    <MenuItem value="ZZ">Autre</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="appointment-office-label">Bureau</InputLabel>
+                  <Select
+                    labelId="appointment-office-label"
+                    label="Bureau"
+                    value={value.office}
+                    onChange={(event) =>
+                      onChange({ ...value, office: event.target.value as AppointmentRequest["office"] })
+                    }
+                  >
+                    <MenuItem value="kinshasa">Kinshasa</MenuItem>
+                    <MenuItem value="bukavu">Bukavu</MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid size={{ xs: 12 }}>
                 <FormControl fullWidth>

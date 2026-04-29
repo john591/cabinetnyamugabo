@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getDjangoAuthTokens, getSession, getDjangoOrigin } from "@/lib/auth";
+import { getDjangoAuthTokens, getSession } from "@/lib/auth";
+import { getDjangoApiBaseUrl } from "@/lib/django-config";
 
 async function proxyRequest(
   request: Request,
@@ -15,7 +16,8 @@ async function proxyRequest(
   const { path } = await params;
   const requestUrl = new URL(request.url);
   const normalizedPath = path.join("/");
-  const targetUrl = `${getDjangoOrigin()}/api/${normalizedPath.endsWith("/") ? normalizedPath : `${normalizedPath}/`}${requestUrl.search}`;
+  const targetPath = normalizedPath.endsWith("/") ? normalizedPath : `${normalizedPath}/`;
+  const targetUrl = `${getDjangoApiBaseUrl()}/${targetPath}${requestUrl.search}`;
 
   const body =
     request.method === "GET" || request.method === "HEAD" ? undefined : await request.text();

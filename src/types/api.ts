@@ -84,6 +84,9 @@ export type AppointmentRequest = {
   name: string;
   email: string;
   phone: string;
+  address: string;
+  country: string;
+  office: "kinshasa" | "bukavu";
   service: Service | null;
   preferred_date: string;
   preferred_time: string | null;

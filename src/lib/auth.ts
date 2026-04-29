@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import type { AdminRole } from "@/types/api";
+import { getDjangoOrigin as getConfiguredDjangoOrigin } from "@/lib/django-config";
 
 export type AdminSession = {
   username: string;
@@ -87,9 +88,5 @@ export async function clearSession() {
 }
 
 export function getDjangoOrigin() {
-  const apiBaseUrl =
-    process.env.NEXT_PUBLIC_DJANGO_API_BASE_URL?.replace(/\/$/, "") ??
-    "http://127.0.0.1:8000/api";
-
-  return apiBaseUrl.replace(/\/api$/, "");
+  return getConfiguredDjangoOrigin();
 }

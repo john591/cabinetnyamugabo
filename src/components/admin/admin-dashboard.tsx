@@ -157,6 +157,9 @@ type AppointmentFormValue = {
   name: string;
   email: string;
   phone: string;
+  address: string;
+  country: string;
+  office: AppointmentRequest["office"];
   service_id: string;
   preferred_date: string;
   preferred_time: string;
@@ -213,6 +216,9 @@ const emptyAppointmentForm: AppointmentFormValue = {
   name: "",
   email: "",
   phone: "",
+  address: "",
+  country: "CD",
+  office: "kinshasa",
   service_id: "",
   preferred_date: "",
   preferred_time: "",
@@ -284,7 +290,7 @@ export function AdminDashboard({
     let isMounted = true;
 
     const normalizeNextPath = (nextUrl: string) => {
-      const url = new URL(nextUrl);
+      const url = new URL(nextUrl, window.location.origin);
       return `/api/django${url.pathname.replace(/^\/api/, "")}${url.search}`;
     };
 
@@ -584,6 +590,9 @@ export function AdminDashboard({
           name: appointmentForm.name,
           email: appointmentForm.email,
           phone: appointmentForm.phone,
+          address: appointmentForm.address,
+          country: appointmentForm.country,
+          office: appointmentForm.office,
           service_id: appointmentForm.service_id ? Number(appointmentForm.service_id) : null,
           preferred_date: appointmentForm.preferred_date,
           preferred_time: appointmentForm.preferred_time || null,
@@ -596,10 +605,9 @@ export function AdminDashboard({
         return;
       }
 
-      const saved = (await response.json()) as AppointmentRequest;
-      setAppointmentItems((current) => [saved, ...current]);
+      await response.json();
       setAppointmentForm(emptyAppointmentForm);
-      setNotice(`Rendez-vous enregistré pour: ${saved.name}`);
+      setNotice("Verification envoyee. La demande apparaitra apres confirmation par email.");
     } catch {
       setNotice("Nous n'avons pas pu enregistrer la demande de rendez-vous. Un probleme avec la base de données.");
     }

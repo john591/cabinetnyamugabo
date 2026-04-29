@@ -10,15 +10,10 @@ import type {
   TeamMember,
 } from "@/types/api";
 import { getDjangoAuthTokens } from "@/lib/auth";
-
-const DEFAULT_DJANGO_API_BASE_URL = "http://127.0.0.1:8000/api";
-
-function getApiBaseUrl() {
-  return (
-    process.env.NEXT_PUBLIC_DJANGO_API_BASE_URL?.replace(/\/$/, "") ??
-    DEFAULT_DJANGO_API_BASE_URL
-  );
-}
+import {
+  getDjangoApiBaseUrl as getConfiguredDjangoApiBaseUrl,
+  getDjangoApiPath,
+} from "@/lib/django-config";
 
 async function djangoFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const fetchConfig: RequestInit & { next?: { revalidate?: number | false } } = {
@@ -35,7 +30,7 @@ async function djangoFetch<T>(path: string, init?: RequestInit): Promise<T> {
     };
   }
 
-  const response = await fetch(`${getApiBaseUrl()}${path}`, fetchConfig);
+  const response = await fetch(`${getConfiguredDjangoApiBaseUrl()}${path}`, fetchConfig);
 
   if (!response.ok) {
     throw new Error(`Django API request failed with status ${response.status}`);
@@ -62,10 +57,7 @@ async function fetchAllPaginated<T>(
       break;
     }
 
-    currentPath = new URL(response.next).pathname.replace("/api", "");
-    if (new URL(response.next).search) {
-      currentPath += new URL(response.next).search;
-    }
+    currentPath = getDjangoApiPath(response.next);
   }
 
   return {
@@ -139,5 +131,5 @@ export async function getDashboardUsers() {
 }
 
 export function getDjangoApiBaseUrl() {
-  return getApiBaseUrl();
+  return getConfiguredDjangoApiBaseUrl();
 }
