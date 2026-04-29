@@ -5,6 +5,7 @@ export type Service = {
   short_description: string;
   description: string;
   icon: string;
+  image_url: string;
   is_featured: boolean;
   order: number;
 };

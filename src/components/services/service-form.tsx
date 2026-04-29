@@ -6,7 +6,7 @@ type ServiceFormValue = {
   title: string;
   short_description: string;
   description: string;
-  icon: string;
+  image_url: string;
   is_featured: boolean;
   order: string;
 };
@@ -23,7 +23,7 @@ type ServiceFormProps = {
 export function ServiceForm({ onChange, onReset, onSubmit, value, editing, canEdit }: ServiceFormProps) {
   return (
     <Grid container spacing={2}>
-      <Grid size={{ xs: 12, md: 6 }}>
+      <Grid size={{ xs: 12 }}>
         <TextField
           label="Title"
           value={value.title}
@@ -33,10 +33,10 @@ export function ServiceForm({ onChange, onReset, onSubmit, value, editing, canEd
       </Grid>
       <Grid size={{ xs: 12, md: 6 }}>
         <TextField
-          label="Service image link"
-          placeholder="https://example.com/service-image.jpg"
-          value={value.icon}
-          onChange={(event) => onChange({ ...value, icon: event.target.value })}
+          label="Image link"
+          placeholder="https://example.com/long-service-image-url"
+          value={value.image_url}
+          onChange={(event) => onChange({ ...value, image_url: event.target.value })}
           fullWidth
         />
       </Grid>

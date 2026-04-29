@@ -111,7 +111,7 @@ type ServiceFormValue = {
   title: string;
   short_description: string;
   description: string;
-  icon: string;
+  image_url: string;
   is_featured: boolean;
   order: string;
 };
@@ -170,7 +170,7 @@ const emptyServiceForm: ServiceFormValue = {
   title: "",
   short_description: "",
   description: "",
-  icon: "",
+  image_url: "",
   is_featured: false,
   order: "0",
 };
@@ -409,7 +409,7 @@ export function AdminDashboard({
             title: serviceForm.title,
             short_description: serviceForm.short_description,
             description: serviceForm.description,
-            icon: serviceForm.icon,
+            image_url: serviceForm.image_url,
             is_featured: serviceForm.is_featured,
             order: Number(serviceForm.order || 0),
           }),
@@ -653,7 +653,7 @@ export function AdminDashboard({
       title: service.title,
       short_description: service.short_description,
       description: service.description,
-      icon: service.icon,
+      image_url: service.image_url || service.icon || "",
       is_featured: service.is_featured,
       order: String(service.order),
     });
@@ -790,7 +790,7 @@ export function AdminDashboard({
       summary: service.short_description,
       status: service.is_featured ? "Prioritaire" : "Standard",
       order: service.order,
-      icon: service.icon || "Non defini",
+      imageUrl: service.image_url || service.icon || "Non defini",
       value: service.slug,
       color: ["#1d3557", "#8b6b3f", "#5d6878", "#314b6b", "#a27c47"][index % 5],
     }));
@@ -1274,7 +1274,7 @@ export function AdminDashboard({
               <Box component="table" sx={{ width: "100%", borderCollapse: "collapse" }}>
                 <Box component="thead">
                   <Box component="tr" sx={{ bgcolor: "#f6efe3" }}>
-                    {["Service", "Resume", "Priorite", "Ordre", "Icone", "Slug"].map((label) => (
+                    {["Service", "Resume", "Priorite", "Ordre", "Image link", "Slug"].map((label) => (
                       <Box
                         key={label}
                         component="th"
@@ -1327,7 +1327,7 @@ export function AdminDashboard({
                         {row.order}
                       </Box>
                       <Box component="td" sx={{ px: 3, py: 2, borderBottom: "1px solid #ece3d5", color: "#5d6878" }}>
-                        {row.icon}
+                        {row.imageUrl}
                       </Box>
                       <Box component="td" sx={{ px: 3, py: 2, borderBottom: "1px solid #ece3d5", fontWeight: 700, color: "#142033" }}>
                         {row.value}
