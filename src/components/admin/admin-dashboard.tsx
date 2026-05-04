@@ -111,7 +111,8 @@ type ServiceFormValue = {
   title: string;
   short_description: string;
   description: string;
-  image_url: string;
+  imageFile: File | null;
+  imagePreviewUrl: string;
   is_featured: boolean;
   order: string;
 };
@@ -124,7 +125,8 @@ type TeamFormValue = {
   email: string;
   phone: string;
   linkedin_url: string;
-  photo_url: string;
+  photoFile: File | null;
+  photoPreviewUrl: string;
   is_active: boolean;
   order: string;
 };
@@ -137,7 +139,8 @@ type PostFormValue = {
   category_id: string;
   author_id: string;
   status: "draft" | "published";
-  featured_image_url: string;
+  featuredImageFile: File | null;
+  featuredImagePreviewUrl: string;
 };
 
 type CategoryFormValue = {
@@ -170,7 +173,8 @@ const emptyServiceForm: ServiceFormValue = {
   title: "",
   short_description: "",
   description: "",
-  image_url: "",
+  imageFile: null,
+  imagePreviewUrl: "",
   is_featured: false,
   order: "0",
 };
@@ -183,7 +187,8 @@ const emptyTeamForm: TeamFormValue = {
   email: "",
   phone: "",
   linkedin_url: "",
-  photo_url: "",
+  photoFile: null,
+  photoPreviewUrl: "",
   is_active: true,
   order: "0",
 };
@@ -196,7 +201,8 @@ const emptyPostForm: PostFormValue = {
   category_id: "",
   author_id: "",
   status: "draft",
-  featured_image_url: "",
+  featuredImageFile: null,
+  featuredImagePreviewUrl: "",
 };
 
 const emptyCategoryForm: CategoryFormValue = {
@@ -285,6 +291,16 @@ export function AdminDashboard({
     Accept: "application/json",
     "Content-Type": "application/json",
   };
+
+  const appendIfPresent = (formData: FormData, key: string, value: string | number | boolean | null) => {
+    if (value !== null && value !== "") {
+      formData.append(key, String(value));
+    }
+  };
+
+  const getServiceImageUrl = (service: Service) => service.image || service.image_url || service.icon || "";
+  const getTeamPhotoUrl = (member: TeamMember) => member.photo || member.photo_url || "";
+  const getPostImageUrl = (post: Post) => post.featured_image || post.featured_image_url || "";
 
   useEffect(() => {
     let isMounted = true;
@@ -398,21 +414,24 @@ export function AdminDashboard({
     }
 
     try {
+      const formData = new FormData();
+      appendIfPresent(formData, "title", serviceForm.title);
+      appendIfPresent(formData, "short_description", serviceForm.short_description);
+      appendIfPresent(formData, "description", serviceForm.description);
+      appendIfPresent(formData, "is_featured", serviceForm.is_featured);
+      appendIfPresent(formData, "order", Number(serviceForm.order || 0));
+
+      if (serviceForm.imageFile) {
+        formData.append("image", serviceForm.imageFile);
+      }
+
       const response = await fetch(
         serviceEditSlug
           ? `${proxyBaseUrl}/services/${serviceEditSlug}`
           : `${proxyBaseUrl}/services`,
         {
           method: serviceEditSlug ? "PATCH" : "POST",
-          headers: requestHeaders,
-          body: JSON.stringify({
-            title: serviceForm.title,
-            short_description: serviceForm.short_description,
-            description: serviceForm.description,
-            image_url: serviceForm.image_url,
-            is_featured: serviceForm.is_featured,
-            order: Number(serviceForm.order || 0),
-          }),
+          body: formData,
         },
       );
 
@@ -442,23 +461,26 @@ export function AdminDashboard({
     }
 
     try {
+      const formData = new FormData();
+      appendIfPresent(formData, "first_name", teamForm.first_name);
+      appendIfPresent(formData, "last_name", teamForm.last_name);
+      appendIfPresent(formData, "role", teamForm.role);
+      appendIfPresent(formData, "bio", teamForm.bio);
+      appendIfPresent(formData, "email", teamForm.email);
+      appendIfPresent(formData, "phone", teamForm.phone);
+      appendIfPresent(formData, "linkedin_url", teamForm.linkedin_url);
+      appendIfPresent(formData, "is_active", teamForm.is_active);
+      appendIfPresent(formData, "order", Number(teamForm.order || 0));
+
+      if (teamForm.photoFile) {
+        formData.append("photo", teamForm.photoFile);
+      }
+
       const response = await fetch(
         teamEditSlug ? `${proxyBaseUrl}/team/${teamEditSlug}` : `${proxyBaseUrl}/team`,
         {
           method: teamEditSlug ? "PATCH" : "POST",
-          headers: requestHeaders,
-          body: JSON.stringify({
-            first_name: teamForm.first_name,
-            last_name: teamForm.last_name,
-            role: teamForm.role,
-            bio: teamForm.bio,
-            email: teamForm.email,
-            phone: teamForm.phone,
-            linkedin_url: teamForm.linkedin_url,
-            photo_url: teamForm.photo_url,
-            is_active: teamForm.is_active,
-            order: Number(teamForm.order || 0),
-          }),
+          body: formData,
         },
       );
 
@@ -488,23 +510,30 @@ export function AdminDashboard({
     }
 
     try {
+      const formData = new FormData();
+      appendIfPresent(formData, "title", postForm.title);
+      appendIfPresent(formData, "slug", postForm.slug);
+      appendIfPresent(formData, "summary", postForm.summary);
+      appendIfPresent(formData, "body", postForm.body);
+      appendIfPresent(
+        formData,
+        "category_id",
+        postForm.category_id ? Number(postForm.category_id) : null,
+      );
+      appendIfPresent(formData, "author_id", postForm.author_id ? Number(postForm.author_id) : null);
+      appendIfPresent(formData, "status", postForm.status);
+
+      if (postForm.featuredImageFile) {
+        formData.append("featured_image", postForm.featuredImageFile);
+      }
+
       const response = await fetch(
         postEditSlug
           ? `${proxyBaseUrl}/blog/posts/${postEditSlug}`
           : `${proxyBaseUrl}/blog/posts`,
         {
           method: postEditSlug ? "PATCH" : "POST",
-          headers: requestHeaders,
-          body: JSON.stringify({
-            title: postForm.title,
-            slug: postForm.slug || undefined,
-            summary: postForm.summary,
-            body: postForm.body,
-            category_id: postForm.category_id ? Number(postForm.category_id) : null,
-            author_id: postForm.author_id ? Number(postForm.author_id) : null,
-            status: postForm.status,
-            featured_image_url: postForm.featured_image_url,
-          }),
+          body: formData,
         },
       );
 
@@ -653,7 +682,8 @@ export function AdminDashboard({
       title: service.title,
       short_description: service.short_description,
       description: service.description,
-      image_url: service.image_url || service.icon || "",
+      imageFile: null,
+      imagePreviewUrl: getServiceImageUrl(service),
       is_featured: service.is_featured,
       order: String(service.order),
     });
@@ -671,7 +701,8 @@ export function AdminDashboard({
       email: member.email,
       phone: member.phone,
       linkedin_url: member.linkedin_url,
-      photo_url: member.photo_url,
+      photoFile: null,
+      photoPreviewUrl: getTeamPhotoUrl(member),
       is_active: member.is_active,
       order: String(member.order),
     });
@@ -689,7 +720,8 @@ export function AdminDashboard({
       category_id: post.category ? String(post.category.id) : "",
       author_id: post.author ? String(post.author.id) : "",
       status: post.published_at ? "published" : "draft",
-      featured_image_url: post.featured_image_url,
+      featuredImageFile: null,
+      featuredImagePreviewUrl: getPostImageUrl(post),
     });
     setNotice(" Note: Le corps de l'article n'est pas inclus dans l'API de liste, donc ajoutez-le avant de sauvegarder.");
   };
@@ -790,7 +822,7 @@ export function AdminDashboard({
       summary: service.short_description,
       status: service.is_featured ? "Prioritaire" : "Standard",
       order: service.order,
-      imageUrl: service.image_url || service.icon || "Non defini",
+      imageUrl: getServiceImageUrl(service) || "Non defini",
       value: service.slug,
       color: ["#1d3557", "#8b6b3f", "#5d6878", "#314b6b", "#a27c47"][index % 5],
     }));

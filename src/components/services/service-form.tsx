@@ -1,12 +1,14 @@
 "use client";
 
 import { Button, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
+import { ImageUploadField } from "@/components/forms/image-upload-field";
 
 type ServiceFormValue = {
   title: string;
   short_description: string;
   description: string;
-  image_url: string;
+  imageFile: File | null;
+  imagePreviewUrl: string;
   is_featured: boolean;
   order: string;
 };
@@ -32,12 +34,12 @@ export function ServiceForm({ onChange, onReset, onSubmit, value, editing, canEd
         />
       </Grid>
       <Grid size={{ xs: 12, md: 6 }}>
-        <TextField
-          label="Image link"
-          placeholder="https://example.com/long-service-image-url"
-          value={value.image_url}
-          onChange={(event) => onChange({ ...value, image_url: event.target.value })}
-          fullWidth
+        <ImageUploadField
+          label="Upload image"
+          previewUrl={value.imagePreviewUrl}
+          onChange={(imageFile, imagePreviewUrl) =>
+            onChange({ ...value, imageFile, imagePreviewUrl })
+          }
         />
       </Grid>
       <Grid size={{ xs: 12, md: 6 }}>

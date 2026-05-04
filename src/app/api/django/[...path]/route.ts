@@ -20,7 +20,7 @@ async function proxyRequest(
   const targetUrl = `${getDjangoApiBaseUrl()}/${targetPath}${requestUrl.search}`;
 
   const body =
-    request.method === "GET" || request.method === "HEAD" ? undefined : await request.text();
+    request.method === "GET" || request.method === "HEAD" ? undefined : await request.arrayBuffer();
 
   try {
     const response = await fetch(targetUrl, {

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
+import { ImageUploadField } from "@/components/forms/image-upload-field";
 
 type TeamFormValue = {
   first_name: string;
@@ -10,7 +11,8 @@ type TeamFormValue = {
   email: string;
   phone: string;
   linkedin_url: string;
-  photo_url: string;
+  photoFile: File | null;
+  photoPreviewUrl: string;
   is_active: boolean;
   order: string;
 };
@@ -49,7 +51,13 @@ export function TeamForm({ value, onChange, onReset, onSubmit, editing, canEdit 
         <TextField label="LinkedIn URL" value={value.linkedin_url} onChange={(event) => onChange({ ...value, linkedin_url: event.target.value })} fullWidth />
       </Grid>
       <Grid size={{ xs: 12, md: 6 }}>
-        <TextField label="Photo URL" value={value.photo_url} onChange={(event) => onChange({ ...value, photo_url: event.target.value })} fullWidth />
+        <ImageUploadField
+          label="Upload photo"
+          previewUrl={value.photoPreviewUrl}
+          onChange={(photoFile, photoPreviewUrl) =>
+            onChange({ ...value, photoFile, photoPreviewUrl })
+          }
+        />
       </Grid>
       <Grid size={{ xs: 12, md: 4 }}>
         <FormControl fullWidth>

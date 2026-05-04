@@ -5,6 +5,7 @@ export type Service = {
   short_description: string;
   description: string;
   icon: string;
+  image: string;
   image_url: string;
   is_featured: boolean;
   order: number;
@@ -21,6 +22,7 @@ export type TeamMember = {
   email: string;
   phone: string;
   linkedin_url: string;
+  photo: string;
   photo_url: string;
   is_active: boolean;
   order: number;
@@ -59,6 +61,7 @@ export type Post = {
   summary: string;
   category: Category | null;
   author: TeamMember | null;
+  featured_image: string;
   featured_image_url: string;
   published_at: string | null;
 };

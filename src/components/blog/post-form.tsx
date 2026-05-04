@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
+import { ImageUploadField } from "@/components/forms/image-upload-field";
 import type { Category, TeamMember } from "@/types/api";
 
 type PostFormValue = {
@@ -11,7 +12,8 @@ type PostFormValue = {
   category_id: string;
   author_id: string;
   status: "draft" | "published";
-  featured_image_url: string;
+  featuredImageFile: File | null;
+  featuredImagePreviewUrl: string;
 };
 
 type PostFormProps = {
@@ -84,7 +86,13 @@ export function PostForm({
         </FormControl>
       </Grid>
       <Grid size={{ xs: 12, md: 6 }}>
-        <TextField label="Featured image URL" value={value.featured_image_url} onChange={(event) => onChange({ ...value, featured_image_url: event.target.value })} fullWidth />
+        <ImageUploadField
+          label="Upload featured image"
+          previewUrl={value.featuredImagePreviewUrl}
+          onChange={(featuredImageFile, featuredImagePreviewUrl) =>
+            onChange({ ...value, featuredImageFile, featuredImagePreviewUrl })
+          }
+        />
       </Grid>
       <Grid size={{ xs: 12 }}>
         <TextField label="Summary" value={value.summary} onChange={(event) => onChange({ ...value, summary: event.target.value })} multiline minRows={3} fullWidth />
