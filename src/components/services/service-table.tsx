@@ -5,11 +5,12 @@ import { Box, Button, Card, CardContent, Chip, Divider, Table, TableBody, TableC
 import type { Service } from "@/types/api";
 
 type ServiceTableProps = {
+  onDelete?: (service: Service) => void;
   onEdit?: (service: Service) => void;
   services: Service[];
 };
 
-export function ServiceTable({ onEdit, services }: ServiceTableProps) {
+export function ServiceTable({ onDelete, onEdit, services }: ServiceTableProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const paginatedServices = services.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -47,9 +48,16 @@ export function ServiceTable({ onEdit, services }: ServiceTableProps) {
                 </TableCell>
                 <TableCell>{service.order}</TableCell>
                 <TableCell align="right">
-                  <Button size="small" onClick={() => onEdit?.(service)}>
-                    Edit
-                  </Button>
+                  <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
+                    <Button size="small" onClick={() => onEdit?.(service)}>
+                      Edit
+                    </Button>
+                    {onDelete ? (
+                      <Button color="error" size="small" onClick={() => onDelete(service)}>
+                        Delete
+                      </Button>
+                    ) : null}
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}

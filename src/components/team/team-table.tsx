@@ -6,10 +6,11 @@ import type { TeamMember } from "@/types/api";
 
 type TeamTableProps = {
   members: TeamMember[];
+  onDelete?: (member: TeamMember) => void;
   onEdit?: (member: TeamMember) => void;
 };
 
-export function TeamTable({ members, onEdit }: TeamTableProps) {
+export function TeamTable({ members, onDelete, onEdit }: TeamTableProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const paginatedMembers = members.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -50,9 +51,16 @@ export function TeamTable({ members, onEdit }: TeamTableProps) {
                   />
                 </TableCell>
                 <TableCell align="right">
-                  <Button size="small" onClick={() => onEdit?.(member)}>
-                    Edit
-                  </Button>
+                  <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
+                    <Button size="small" onClick={() => onEdit?.(member)}>
+                      Edit
+                    </Button>
+                    {onDelete ? (
+                      <Button color="error" size="small" onClick={() => onDelete(member)}>
+                        Delete
+                      </Button>
+                    ) : null}
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}

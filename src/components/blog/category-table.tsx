@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Card, CardContent, Divider, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, Divider, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
 import type { Category } from "@/types/api";
 
 type CategoryTableProps = {
   categories: Category[];
+  onDelete?: (category: Category) => void;
 };
 
-export function CategoryTable({ categories }: CategoryTableProps) {
+export function CategoryTable({ categories, onDelete }: CategoryTableProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const paginatedCategories = categories.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -31,6 +32,7 @@ export function CategoryTable({ categories }: CategoryTableProps) {
               <TableCell>Name</TableCell>
               <TableCell>Slug</TableCell>
               <TableCell>Description</TableCell>
+              <TableCell align="right">Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -39,6 +41,13 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                 <TableCell sx={{ fontWeight: 600 }}>{category.name}</TableCell>
                 <TableCell>{category.slug}</TableCell>
                 <TableCell>{category.description || "No description"}</TableCell>
+                <TableCell align="right">
+                  {onDelete ? (
+                    <Button color="error" size="small" onClick={() => onDelete(category)}>
+                      Delete
+                    </Button>
+                  ) : null}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

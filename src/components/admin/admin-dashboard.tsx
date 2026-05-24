@@ -298,9 +298,9 @@ export function AdminDashboard({
     }
   };
 
-  const getServiceImageUrl = (service: Service) => service.image || service.image_url || service.icon || "";
-  const getTeamPhotoUrl = (member: TeamMember) => member.photo || member.photo_url || "";
-  const getPostImageUrl = (post: Post) => post.featured_image || post.featured_image_url || "";
+  const getServiceImageUrl = (service: Service) => service.image || service.image || service.icon || "";
+  const getTeamPhotoUrl = (member: TeamMember) => member.photo || member.photo || "";
+  const getPostImageUrl = (post: Post) => post.featured_image || post.featured_image || "";
 
   useEffect(() => {
     let isMounted = true;
@@ -671,6 +671,139 @@ export function AdminDashboard({
       setNotice(`Le rendez-vous ${saved.id} a été mis à jour vers ${saved.status}.`);
     } catch {
       setNotice("Nous n'avons pas pu mettre à jour le rendez-vous. Vérifiez que Django est en cours d'exécution.");
+    }
+  };
+
+  const deleteFromDjango = async (path: string, fallbackPath?: string) => {
+    const response = await fetch(`${proxyBaseUrl}${path}`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      return response;
+    }
+
+    if (response.status === 404 && fallbackPath) {
+      return fetch(`${proxyBaseUrl}${fallbackPath}`, {
+        method: "DELETE",
+      });
+    }
+
+    return response;
+  };
+
+  const handleServiceDelete = async (service: Service) => {
+    if (!canEdit) {
+      setNotice("Your current role is read-only.");
+      return;
+    }
+
+    if (!window.confirm(`Delete service "${service.title}"?`)) {
+      return;
+    }
+
+    try {
+      const response = await deleteFromDjango(`/services/${encodeURIComponent(service.slug)}`);
+
+      if (!response.ok) {
+        setNotice(await getErrorMessage(response));
+        return;
+      }
+
+      setServiceItems((current) => current.filter((item) => item.id !== service.id));
+      if (serviceEditSlug === service.slug) {
+        setServiceEditSlug(null);
+        setServiceForm(emptyServiceForm);
+      }
+      setNotice(`Deleted service: ${service.title}`);
+    } catch {
+      setNotice("Nous n'avons pas pu supprimer le service. Un probleme avec la base de données.");
+    }
+  };
+
+  const handleTeamDelete = async (member: TeamMember) => {
+    if (!canEdit) {
+      setNotice("Your current role is read-only.");
+      return;
+    }
+
+    if (!window.confirm(`Delete team member "${member.full_name}"?`)) {
+      return;
+    }
+
+    try {
+      const response = await deleteFromDjango(`/team/${encodeURIComponent(member.slug)}`);
+
+      if (!response.ok) {
+        setNotice(await getErrorMessage(response));
+        return;
+      }
+
+      setTeamItems((current) => current.filter((item) => item.id !== member.id));
+      if (teamEditSlug === member.slug) {
+        setTeamEditSlug(null);
+        setTeamForm(emptyTeamForm);
+      }
+      setNotice(`Deleted team member: ${member.full_name}`);
+    } catch {
+      setNotice("Nous n'avons pas pu supprimer le membre de l'équipe. Un probleme avec la base de données.");
+    }
+  };
+
+  const handlePostDelete = async (post: Post) => {
+    if (!canEdit) {
+      setNotice("Your current role is read-only.");
+      return;
+    }
+
+    if (!window.confirm(`Delete post "${post.title}"?`)) {
+      return;
+    }
+
+    try {
+      const response = await deleteFromDjango(`/blog/posts/${encodeURIComponent(post.slug)}`);
+
+      if (!response.ok) {
+        setNotice(await getErrorMessage(response));
+        return;
+      }
+
+      setPostItems((current) => current.filter((item) => item.id !== post.id));
+      if (postEditSlug === post.slug) {
+        setPostEditSlug(null);
+        setPostForm(emptyPostForm);
+      }
+      setNotice(`Deleted post: ${post.title}`);
+    } catch {
+      setNotice("Nous n'avons pas pu supprimer l'article. Un probleme avec la base de données.");
+    }
+  };
+
+  const handleCategoryDelete = async (category: Category) => {
+    if (!canEdit) {
+      setNotice("Your current role is read-only.");
+      return;
+    }
+
+    if (!window.confirm(`Delete category "${category.name}"?`)) {
+      return;
+    }
+
+    try {
+      const response = await deleteFromDjango(
+        `/blog/categories/${encodeURIComponent(category.slug)}`,
+        `/blog/categories/${category.id}`,
+      );
+
+      if (!response.ok) {
+        setNotice(await getErrorMessage(response));
+        return;
+      }
+
+      setCategoryItems((current) => current.filter((item) => item.id !== category.id));
+      setNotice(`Deleted category: ${category.name}`);
+    } catch {
+      setNotice("Nous n'avons pas pu supprimer la catégorie. Un probleme avec la base de données.");
     }
   };
 
@@ -1464,10 +1597,18 @@ export function AdminDashboard({
         <Tab label="Posts" />
         <Tab label="Categories" />
       </Tabs>
-      {tableTab === 0 ? <ServiceTable services={serviceItems} onEdit={startEditingService} /> : null}
-      {tableTab === 1 ? <TeamTable members={teamItems} onEdit={startEditingTeam} /> : null}
-      {tableTab === 2 ? <PostTable posts={postItems} onEdit={startEditingPost} /> : null}
-      {tableTab === 3 ? <CategoryTable categories={categoryItems} /> : null}
+      {tableTab === 0 ? (
+        <ServiceTable services={serviceItems} onEdit={startEditingService} onDelete={handleServiceDelete} />
+      ) : null}
+      {tableTab === 1 ? (
+        <TeamTable members={teamItems} onEdit={startEditingTeam} onDelete={handleTeamDelete} />
+      ) : null}
+      {tableTab === 2 ? (
+        <PostTable posts={postItems} onEdit={startEditingPost} onDelete={handlePostDelete} />
+      ) : null}
+      {tableTab === 3 ? (
+        <CategoryTable categories={categoryItems} onDelete={handleCategoryDelete} />
+      ) : null}
     </Stack>
   );
 
@@ -1478,7 +1619,7 @@ export function AdminDashboard({
       case "users":
         return <UserTable users={userItems} />;
       case "products":
-        return <ServiceTable services={serviceItems} onEdit={startEditingService} />;
+        return <ServiceTable services={serviceItems} onEdit={startEditingService} onDelete={handleServiceDelete} />;
       case "orders":
         return (
           <AppointmentPanel

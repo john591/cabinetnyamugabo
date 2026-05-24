@@ -1,4 +1,4 @@
-const DEFAULT_DJANGO_ORIGIN = "http://127.0.0.1:8000";
+const DEFAULT_DJANGO_ORIGIN = "https://cabinetnyamugabo.onrender.com/api";
 
 function withoutTrailingSlash(value: string) {
   return value.replace(/\/+$/, "");

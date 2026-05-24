@@ -48,7 +48,7 @@ export default async function DashboardPage() {
     ]);
   } catch {
     apiError =
-      "The Django API is not reachable yet. Start the backend at http://127.0.0.1:8000 and refresh the dashboard.";
+      "The Database is not reachable yet. Start the backend at http://127.0.0.1:8000 and refresh the dashboard.";
   }
 
   return (

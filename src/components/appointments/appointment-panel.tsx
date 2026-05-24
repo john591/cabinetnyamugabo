@@ -61,11 +61,94 @@ export function AppointmentPanel({
 
   return (
     <Grid container spacing={3}>
-      <Grid size={{ xs: 12, lg: 5 }}>
-      <Card sx={{ borderRadius: 0 }}>
+      <Grid size={{ xs: 12 }}>
+        <Card sx={{ borderRadius: 0 }}>
+          <CardContent sx={{ p: 0 }}>
+            <Typography variant="h5" sx={{ fontWeight: 700, px: 3, py: 2.5 }}>
+              Demandes de Rendez-vous
+            </Typography>
+            <TableContainer>
+              <Table sx={{ minWidth: 940 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Nom</TableCell>
+                    <TableCell>Email</TableCell>
+                    <TableCell>Numéro</TableCell>
+                    <TableCell>Service</TableCell>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Heure</TableCell>
+                    <TableCell>Statut</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {paginatedAppointments.map((appointment) => (
+                    <TableRow key={appointment.id}>
+                      <TableCell sx={{ fontWeight: 600 }}>{appointment.name}</TableCell>
+                      <TableCell>{appointment.email}</TableCell>
+                      <TableCell>{appointment.phone || "Non renseigné"}</TableCell>
+                      <TableCell>{appointment.service?.title ?? "General request"}</TableCell>
+                      <TableCell>{appointment.preferred_date}</TableCell>
+                      <TableCell>{appointment.preferred_time ?? "Not set"}</TableCell>
+                      <TableCell sx={{ minWidth: 160 }}>
+                        {canEdit ? (
+                          <FormControl fullWidth size="small">
+                            <Select
+                              value={appointment.status}
+                              onChange={(event) =>
+                                onStatusChange(
+                                  appointment.id,
+                                  event.target.value as AppointmentRequest["status"],
+                                )
+                              }
+                              sx={{
+                                ...statusStyles[appointment.status],
+                                fontWeight: 700,
+                                ".MuiOutlinedInput-notchedOutline": {
+                                  borderColor: statusStyles[appointment.status].backgroundColor,
+                                },
+                                "&:hover .MuiOutlinedInput-notchedOutline": {
+                                  borderColor: statusStyles[appointment.status].backgroundColor,
+                                },
+                                ".MuiSelect-icon": {
+                                  color: statusStyles[appointment.status].color,
+                                },
+                              }}
+                            >
+                              <MenuItem value="pending">Pending</MenuItem>
+                              <MenuItem value="confirmed">Confirmed</MenuItem>
+                              <MenuItem value="completed">Completed</MenuItem>
+                              <MenuItem value="cancelled">Cancelled</MenuItem>
+                            </Select>
+                          </FormControl>
+                        ) : (
+                          appointment.status
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              component="div"
+              count={appointments.length}
+              page={page}
+              onPageChange={(_, newPage) => setPage(newPage)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(event) => {
+                setRowsPerPage(Number(event.target.value));
+                setPage(0);
+              }}
+              rowsPerPageOptions={[5, 10, 25]}
+            />
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid size={{ xs: 12 }}>
+        <Card sx={{ borderRadius: 0 }}>
           <CardContent>
             <Typography variant="h5" sx={{ fontWeight: 700 }}>
-              Demandes de Rendez-vous
+              Demande de rendez-vous
             </Typography>
             <Grid container spacing={2} sx={{ mt: 0.5 }}>
               <Grid size={{ xs: 12 }}>
@@ -169,86 +252,6 @@ export function AppointmentPanel({
                 </Button>
               </Grid>
             </Grid>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid size={{ xs: 12, lg: 7 }}>
-        <Card sx={{ borderRadius: 0 }}>
-          <CardContent sx={{ p: 0 }}>
-            <TableContainer>
-              <Table sx={{ minWidth: 940 }}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Nom</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Numéro</TableCell>
-                    <TableCell>Service</TableCell>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Heure</TableCell>
-                    <TableCell>Statut</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {paginatedAppointments.map((appointment) => (
-                    <TableRow key={appointment.id}>
-                      <TableCell sx={{ fontWeight: 600 }}>{appointment.name}</TableCell>
-                      <TableCell>{appointment.email}</TableCell>
-                      <TableCell>{appointment.phone || "Non renseigné"}</TableCell>
-                      <TableCell>{appointment.service?.title ?? "General request"}</TableCell>
-                      <TableCell>{appointment.preferred_date}</TableCell>
-                      <TableCell>{appointment.preferred_time ?? "Not set"}</TableCell>
-                      <TableCell sx={{ minWidth: 160 }}>
-                        {canEdit ? (
-                          <FormControl fullWidth size="small">
-                            <Select
-                              value={appointment.status}
-                              onChange={(event) =>
-                                onStatusChange(
-                                  appointment.id,
-                                  event.target.value as AppointmentRequest["status"],
-                                )
-                              }
-                              sx={{
-                                ...statusStyles[appointment.status],
-                                fontWeight: 700,
-                                ".MuiOutlinedInput-notchedOutline": {
-                                  borderColor: statusStyles[appointment.status].backgroundColor,
-                                },
-                                "&:hover .MuiOutlinedInput-notchedOutline": {
-                                  borderColor: statusStyles[appointment.status].backgroundColor,
-                                },
-                                ".MuiSelect-icon": {
-                                  color: statusStyles[appointment.status].color,
-                                },
-                              }}
-                            >
-                              <MenuItem value="pending">Pending</MenuItem>
-                              <MenuItem value="confirmed">Confirmed</MenuItem>
-                              <MenuItem value="completed">Completed</MenuItem>
-                              <MenuItem value="cancelled">Cancelled</MenuItem>
-                            </Select>
-                          </FormControl>
-                        ) : (
-                          appointment.status
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              component="div"
-              count={appointments.length}
-              page={page}
-              onPageChange={(_, newPage) => setPage(newPage)}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={(event) => {
-                setRowsPerPage(Number(event.target.value));
-                setPage(0);
-              }}
-              rowsPerPageOptions={[5, 10, 25]}
-            />
           </CardContent>
         </Card>
       </Grid>

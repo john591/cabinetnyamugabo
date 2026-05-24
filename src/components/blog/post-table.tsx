@@ -14,10 +14,11 @@ function formatDate(value: string | null) {
 
 type PostTableProps = {
   posts: Post[];
+  onDelete?: (post: Post) => void;
   onEdit?: (post: Post) => void;
 };
 
-export function PostTable({ posts, onEdit }: PostTableProps) {
+export function PostTable({ posts, onDelete, onEdit }: PostTableProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const paginatedPosts = posts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -52,9 +53,16 @@ export function PostTable({ posts, onEdit }: PostTableProps) {
                 <TableCell>{post.author?.full_name ?? "Unknown author"}</TableCell>
                 <TableCell>{formatDate(post.published_at)}</TableCell>
                 <TableCell align="right">
-                  <Button size="small" onClick={() => onEdit?.(post)}>
-                    Edit
-                  </Button>
+                  <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
+                    <Button size="small" onClick={() => onEdit?.(post)}>
+                      Edit
+                    </Button>
+                    {onDelete ? (
+                      <Button color="error" size="small" onClick={() => onDelete(post)}>
+                        Delete
+                      </Button>
+                    ) : null}
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}
