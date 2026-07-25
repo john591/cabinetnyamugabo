@@ -1,4 +1,4 @@
-const DEFAULT_DJANGO_ORIGIN = "https://cabinetnyamugabo.onrender.com/api";
+const DEFAULT_DJANGO_API_BASE_URL = "https://cabinetnyamugabo-39d6688dcdd8.herokuapp.com/api";
 
 function withoutTrailingSlash(value: string) {
   return value.replace(/\/+$/, "");
@@ -7,7 +7,7 @@ function withoutTrailingSlash(value: string) {
 export function getDjangoApiBaseUrl() {
   const configuredUrl =
     process.env.DJANGO_API_BASE_URL ?? process.env.NEXT_PUBLIC_DJANGO_API_BASE_URL;
-  const baseUrl = withoutTrailingSlash(configuredUrl ?? `${DEFAULT_DJANGO_ORIGIN}/api`);
+  const baseUrl = withoutTrailingSlash(configuredUrl ?? DEFAULT_DJANGO_API_BASE_URL);
 
   return baseUrl.endsWith("/api") ? baseUrl : `${baseUrl}/api`;
 }
